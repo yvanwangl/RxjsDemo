@@ -1,0 +1,84 @@
+<html>
+	<input type='text' id='count'/>
+	<span class='add'>增加</span>
+	<ul id='list'>
+	</ul>
+</html>
+
+
+<style>
+	.add{
+	  display:'inline-block';
+	  width:50px;
+	  height:40px;
+	  line-height:40px;
+	  border:1px solid red;
+	}
+	#list li.done {
+	  border: 1px solid red;
+	}
+</style>
+
+<script>
+	function $(selector){
+	  return document.querySelector(selector);
+	}
+
+
+var countInput = $('#count');
+var list = $('#list');
+var add = $('.add');
+var remove = $('.glyphicon-remove');
+var count$ = Rx.Observable
+				.fromEvent(countInput, 'keydown')
+				.filter(r => r.keyCode === 13);
+var add$ = Rx.Observable.fromEvent(add, 'click');
+
+var allAdd$ = count$
+					.merge(add$)
+					.map(()=> countInput.value)
+					.filter(val=>val!='')
+					.map(val=>createTodoItem(val))
+					.do(r => {list.appendChild(r); countInput.value = ''})
+					.publishReplay(1)
+					.refCount();
+
+var toggle$ = allAdd$
+					.mergeMap(todoItem=> {
+						return Rx.Observable.fromEvent(todoItem, 'click')
+						   .filter(e=> e.target === todoItem)
+						   .mapTo(todoItem)
+					})
+					.do(todoItem=> {
+						if(todoItem.classList.contains('done')){
+						    todoItem.classList.remove('done');
+						}else {
+						    todoItem.classList.add('done');
+						}
+					});
+
+var remove$ = allAdd$
+					.mergeMap(todoItem => {
+						var button = todoItem.querySelector('.remove-button');
+						return Rx.Observable.fromEvent(button,'click').mapTo(todoItem)
+					})
+					.do(todoItem=> {
+					    todoItem.parentNode.removeChild(todoItem)
+					});
+
+
+var createTodoItem = function(val){
+	const result = document.createElement('LI')
+	result.classList.add('list-group-item')
+	const innerHTML = `
+		${val}
+		<button type="button" class="btn btn-default button-remove" aria-label="right Align">
+		  <span class="glyphicon glyphicon-remove remove-button" aria-hidden="true">按钮</span>
+		</button>
+		`
+	result.innerHTML = innerHTML;
+	return result;
+}
+
+toggle$.merge(remove$).subscribe();
+</script>
