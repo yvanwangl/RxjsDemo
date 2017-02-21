@@ -1,0 +1,33 @@
+<html>
+	<div class="drag"></div>
+</html>
+
+<style>
+	.drag {
+		width:100px;
+		height:100px;
+		background:red;
+		position:absolute;
+		cursor:pointer;
+	}
+</style>
+
+<script>
+	var drag = document.querySelector('.drag');
+
+	var mouseD$ = Rx.Observable.fromEvent(drag, 'mousedown');
+
+	var mouseM$ = Rx.Observable.fromEvent(document, 'mousemove');
+
+	var mouseU$ = Rx.Observable.fromEvent(document, 'mouseup');
+
+	var drag$ = mouseD$
+					.switchMap((e)=>mouseM$.takeUntil(mouseU$))
+					.map(e=>({x:e.clientX, y:e.clientY}))
+					.do(p=>{
+							drag.style.top=p.y-50+'px';
+							drag.style.left=p.x-50+'px'
+					});
+
+	drag$.subscribe();
+</script>

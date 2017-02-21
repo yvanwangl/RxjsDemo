@@ -1,0 +1,48 @@
+<html>
+	
+</html>
+
+<style>
+	
+</style>
+
+<script>
+	 var datas = [
+		{
+			age:22,
+			name:'wang'
+		},
+		{
+			age:23,
+			name:'li'
+		},
+		{
+			age:44,
+			name:'wang'
+		},
+		{
+			age:24,
+			name:'huan'
+		}
+	];
+	var data1$ = Rx.Observable
+					.from(datas)
+					.distinct(data=>data.name)
+					.do(r=>console.log(r));
+	var data2$ = Rx.Observable
+					.from(datas)
+					.distinctUntilChanged((p,q)=>p.name==q.name)
+					.do(r=>console.log(r));
+	var data3$ = Rx.Observable
+					.from(datas)
+					.distinctUntilKeyChanged('name')
+					.do(r=>console.log(r));
+	var data4$ = Rx.Observable
+				.from(datas)
+				.distinctUntilKeyChanged('name',(p,q)=>p.substr(0,3)==q.substr(0,3))
+				.do(r=>console.log(r));
+	data1$.subscribe();
+	data2$.subscribe();
+	data3$.subscribe();
+	data4$.subscribe();
+</script>
