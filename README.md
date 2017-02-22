@@ -2,8 +2,9 @@
 ##使用codepen查看
 
 ```
-codepen网址：http://codepen.io/kysully/pen/LGBbGM[http://codepen.io/kysully/pen/LGBbGM]
+codepen网址：http://codepen.io/kysully/pen/LGBbGM
 ```
+
 设置网址的javascript设置：
 https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.1/Rx.min.js
 
