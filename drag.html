@@ -13,7 +13,7 @@
 </style>
 
 <script>
-	var drag = document.querySelector('.drag');
+/*	var drag = document.querySelector('.drag');
 
 	var mouseD$ = Rx.Observable.fromEvent(drag, 'mousedown');
 
@@ -29,5 +29,24 @@
 							drag.style.left=p.x-50+'px'
 					});
 
-	drag$.subscribe();
+	drag$.subscribe();*/
+	var drag = document.querySelector('.drag');
+
+	var mouseD$ = Rx.Observable.fromEvent(drag, 'mousedown').publishReplay(1).refCount();
+
+	var mouseM$ = Rx.Observable.fromEvent(document, 'mousemove');
+
+	var mouseU$ = Rx.Observable.fromEvent(document, 'mouseup');
+
+	var drag$ = mouseD$
+					.switchMap((e)=>mouseM$.takeUntil(mouseU$))
+      				.merge(mouseD$)
+					.map(e=>({x:e.clientX, y:e.clientY}));
+		
+	var mouseDp$ = mouseD$.map(e=>({x:e.offsetX,y:e.offsetY }));
+
+	var result = Rx.Observable.combineLatest(mouseDp$, drag$, (start, move)=>({x: move.x-start.x,y:move.y-start.y}))
+								.do(p=> {drag.style.top= p.y+'px'; drag.style.left=p.x+'px'});
+
+	result.subscribe();
 </script>

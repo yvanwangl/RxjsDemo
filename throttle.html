@@ -1,0 +1,11 @@
+<script>
+	var click$ = Rx.Observable.fromEvent(document, 'click');
+	var result$ = click$.throttleTime(1000).do(x=>console.log(x));
+	result$.subscribe();
+</script>
+
+<script>
+	var click$ = Rx.Observable.fromEvent(document, 'click');
+	var result$ = click$.throttle(e=>Rx.Observable.interval(1000)).do(x=>console.log(x));
+	result$.subscribe();
+</script>
